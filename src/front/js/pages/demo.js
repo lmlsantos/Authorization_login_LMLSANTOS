@@ -1,41 +1,71 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
-
+import React, { useContext, useState} from "react";
+import {useNavigate} from "react-router-dom";
 import { Context } from "../store/appContext";
 
 export const Demo = () => {
-	const { store, actions } = useContext(Context);
+	
+	const [email, setEmail]=useState("");
+	const [password, setPassword]=useState("");
+
+	const navigate = useNavigate();
+	const {store, actions} =  useContext(Context);
+
+	const onSubmit=()=> {
+		if(email === ""){
+			alert("Please Insert the email");
+		} else if (password === ""){
+			alert ("Please Insert the password");
+		} else {
+			fetch(`https://automatic-adventure-qrrj5q9rvgg29vj9-3001.app.github.dev/api/token`, { 
+				method: "POST",
+				headers: { 
+					"Content-Type": 
+					"application/json" 
+				},
+				body: JSON.stringify({ email, password}) 
+     		})
+			.then((res) => res.json())
+			.then((result) => {
+
+				console.log("Token is here!", result);
+				localStorage.setItem("jwt-token", result.token);
+				actions.storeUserId(result.user_id);
+				alert("You are logged in!")
+				navigate("/")
+
+			}).catch((err) => {
+				console.log(err);
+			})
+		}
+	}
 
 	return (
 		<div className="container">
-			<ul className="list-group">
-				{store.demo.map((item, index) => {
-					return (
-						<li
-							key={index}
-							className="list-group-item d-flex justify-content-between"
-							style={{ background: item.background }}>
-							<Link to={"/single/" + index}>
-								<span>Link to: {item.title}</span>
-							</Link>
-							{// Conditional render example
-							// Check to see if the background is orange, if so, display the message
-							item.background === "orange" ? (
-								<p style={{ color: item.initial }}>
-									Check store/flux.js scroll to the actions to see the code
-								</p>
-							) : null}
-							<button className="btn btn-success" onClick={() => actions.changeColor(index, "orange")}>
-								Change Color
-							</button>
-						</li>
-					);
-				})}
-			</ul>
-			<br />
-			<Link to="/">
-				<button className="btn btn-primary">Back home</button>
-			</Link>
+			<div className="mb-3">
+				<label htmlFor="formGroupExampleInput" className="form-label">Email ID:</label>
+				<input 
+					type="text" 
+					className="form-control" 
+					id="formGroupExampleInput" 
+					placeholder="Insert your email!..."
+					value={email}
+					onChange={(e)=> setEmail(e.target.value)}
+				/>
+			</div>
+			<div className="mb-3">
+				<label htmlFor="formGroupExampleInput2" className="form-label">Password:</label>
+				<input 
+					type="password" 
+					className="form-control" 
+					id="formGroupExampleInput2" 
+					placeholder="Insert Password here!"
+					value={password}
+					onChange={(e)=> setPassword(e.target.value)}
+				/>
+			</div>
+			<div className="col-12">
+    			<button type="submit" className="btn btn-primary" onClick={onSubmit}>Sign in</button>
+  			</div>
 		</div>
 	);
 };

@@ -13,7 +13,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 					background: "white",
 					initial: "white"
 				}
-			]
+			],
+			userId: null
+
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
@@ -26,7 +28,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					// fetching data from the backend
 					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
 					const data = await resp.json()
-					setStore({ message: data.message })
+					const store = getStore();
+					setStore({ ...store, message: data.message })
 					// don't forget to return something, that is how the async resolves
 					return data;
 				}catch(error){
@@ -45,7 +48,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 				});
 
 				//reset the global store
-				setStore({ demo: demo });
+				setStore({ ...store, demo: demo });
+
+			},
+
+			storeUserId: (id) => {
+				const store = getStore();
+				setStore({ ...store ,userId: id })
 			}
 		}
 	};
