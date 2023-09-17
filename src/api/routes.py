@@ -13,18 +13,17 @@ from api.utils import generate_sitemap, APIException
 api = Blueprint('api', __name__)
 
 @api.route("/hello", methods=["POST", "GET"])
-@cross_origin()
+
 def handle_hello():
     response_body = {
             "message": "Luís! i'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
         }
     return jsonify(response_body), 200
 
-# Create a route to authenticate your users (creating a token) and return JWTs. The
-# create_access_token() function is used to actually generate the JWT.
-@api.route("/token", methods=["POST"])
-@cross_origin()
-def create_token():
+
+@api.route("/login", methods=["POST"])
+
+def login_user():
 
     email = request.json.get("email", None)
     password = request.json.get("password", None)
@@ -55,7 +54,7 @@ def create_token():
    
 # a new end point to get tasks (protected endpoint because of jwt_required)
 @api.route("/tasks", methods=["GET"])
-@cross_origin()
+
 @jwt_required()
 def get_tasks():
     # access the identity of the current user with get_jwt_identity

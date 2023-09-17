@@ -1,4 +1,4 @@
-import React, { useState,useContext } from "react";
+import React, { useState,useContext, useEffect } from "react";
 import { Context } from "../store/appContext";
 import rigoImageUrl from "../../img/rigo-baby.jpg";
 import "../../styles/home.css";
@@ -18,7 +18,7 @@ export const Home = () => {
 						"Content-Type": "application/json", 
 						"Authorization": "Bearer " + token
 					},
-				})
+			})
 				.then((res) => res.json())
 				.then((result) => {
 					console.log("Response is here!", result);
@@ -30,6 +30,34 @@ export const Home = () => {
 			alert("You are not logged in!")
 		}
 	}
+
+	const getMessage = () => {
+		fetch(`https://automatic-adventure-qrrj5q9rvgg29vj9-3001.app.github.dev/api/hello`, { 
+					method: "GET",
+					headers: { 
+						"Content-Type": "application/json", 
+					},
+		})
+			.then((res) => res.json())
+			.then((result) => {
+					
+				setMessage(result.message);
+			}).catch((err) => {
+				console.log(err);
+			})
+	}	
+	
+
+	useEffect(() => {
+		getMessage();
+	},[])
+
+
+	const logOut = () => {
+		localStorage.removeItem("jwt-token")
+		alert("You are Logout!")
+	}
+
 
 	return (
 		<div className="text-center mt-5">
@@ -48,6 +76,7 @@ export const Home = () => {
 				</a>
 			</p>
 			<button onClick={getTasks}>Get Tasks</button>
+			<button onClick={logOut}>Logout</button>
 		</div>
 	);
 };
